@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smartphone Price Predictor 📱</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #1e1e2f;
+            --dark-card: #27293d;
+            --text-light: #f0f3f6;
+            --accent-blue: #007bff;
+            --accent-green: #28a745;
+            --accent-green-dark: #198754;
+            --light-border: #4a4d6e;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        /* New Flex Container for the entire application content */
+        #main-content {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px; /* Increased max width for the two-column layout */
+        }
+        
+        /* Style for the input form container (Right side on desktop) */
+        .container {
+            background-color: var(--dark-card);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            flex: 1; /* Allows it to take up available space */
+            order: 1; /* Puts the form on the right by default */
+        }
+
+        /* Style for the results panel container (Left side on desktop) */
+        .result-panel {
+            background-color: var(--dark-card);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            flex: 1; /* Allows it to take up available space */
+            order: 0; /* Puts the results on the left by default */
+        }
+        
+        /* Stack vertically on smaller screens (mobile/tablet) */
+        @media (max-width: 900px) {
+            #main-content {
+                flex-direction: column;
+                max-width: 650px;
+            }
+            .container, .result-panel {
+                order: initial; /* Reset order, so form is on top of results */
+            }
+        }
+        
+        /* General Styling (mostly unchanged) */
+        h2 {
+            text-align: center;
+            color: var(--accent-blue);
+            margin-bottom: 30px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        h3 {
+            color: var(--text-light);
+            border-bottom: 2px solid var(--light-border);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .form-group {
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.95em;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--light-border);
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: #31344a;
+            color: var(--text-light);
+            font-size: 1em;
+            transition: border-color 0.3s;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        input[type="number"]:focus, select:focus {
+            border-color: var(--accent-blue);
+            outline: none;
+        }
+        select:required:invalid {
+            color: #888;
+        }
+        select option {
+            background-color: #31344a;
+            color: var(--text-light);
+        }
+        .checkbox-group {
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+        }
+        .checkbox-group label {
+            font-weight: 400;
+            font-size: 0.9em;
+        }
+        button {
+            background-color: var(--accent-blue);
+            color: white;
+            padding: 14px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            transition: background-color 0.3s ease, transform 0.1s;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        .result {
+            margin-top: 0; /* Remove top margin as it's the first element */
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid var(--accent-green);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: 700;
+            background-color: #31344a;
+            color: var(--accent-green);
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);
+        }
+
+        /* Recommendations Styling */
+        .recommendations {
+            margin-top: 0;
+            padding: 0; /* Adjusted padding as it's inside result-panel */
+            border: none;
+            background-color: transparent;
+        }
+        .rec-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #4a4d6e;
+            font-size: 0.95em;
+        }
+        .rec-item:last-child {
+            border-bottom: none;
+        }
+        .rec-name {
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+        .rec-price {
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+    <div id="main-content">
+        
+        {% if prediction_text or recommendations %}
+        <div class="result-panel">
+            <h2>Prediction Results</h2>
+
+            {% if prediction_text %}
+            <div class="result">{{ prediction_text }}</div>
+            {% endif %}
+
+            {% if recommendations %}
+            <div class="recommendations">
+                <h3>Recommended Smartphones from Training Data:</h3>
+                {% for rec in recommendations %}
+                <div class="rec-item">
+                    <span class="rec-name">{{ rec.brand }} {{ rec.name }}</span>
+                    <span class="rec-price">{{ rec.price }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="container">
+            <h2>Smartphone Price Predictor 📱</h2>
+            
+            <form action="/predict" method="POST">
+                
+                <div class="form-group">
+                    <label for="os">Operating System (OS)</label>
+                    <select name="os" required>
+                        <option value="" disabled selected hidden>Choose an Operating System</option>
+                        {% for os_name in oss %}
+                        <option value="{{ os_name }}">{{ os_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="processor_brand">Processor Brand (Major Chipsets Only)</label>
+                    <select name="processor_brand" required>
+                        <option value="" disabled selected hidden>Choose a Processor Brand</option>
+                        {% for processor in processors %}
+                        <option value="{{ processor }}">{{ processor | title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="display_types">Display Type</label>
+                    <select name="display_types" required>
+                        <option value="" disabled selected hidden>Choose a Display Type</option>
+                        {% for display in displays %}
+                        <option value="{{ display }}">{{ display | title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ram">RAM (in GB)</label>
+                    <input type="number" name="ram" required placeholder="e.g., 8" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="storage">Storage (in GB)</label>
+                    <input type="number" name="storage" required placeholder="e.g., 128" min="16">
+                </div>
+
+                <div class="form-group">
+                    <label for="battery_capacity">Battery Capacity (in mAh)</label>
+                    <input type="number" name="battery_capacity" required placeholder="e.g., 5000" min="1000">
+                </div>
+
+                <div class="form-group">
+                    <label for="rear_camera">Primary Rear Camera (in MP)</label>
+                    <input type="number" name="rear_camera" required placeholder="e.g., 50" min="5">
+                </div>
+
+                <div class="form-group">
+                    <label for="front_camera">Primary Front Camera (in MP)</label>
+                    <input type="number" name="front_camera" required placeholder="e.g., 16" min="5">
+                </div>
+
+                <div class="form-group">
+                    <label for="refresh_rate">Refresh Rate (in Hz)</label>
+                    <input type="number" name="refresh_rate" required placeholder="e.g., 120" min="60">
+                </div>
+
+                <div class="form-group">
+                    <label>Additional Features</label>
+                    <div class="checkbox-group">
+                        <div>
+                            <input type="checkbox" id="fast_charging" name="fast_charging">
+                            <label for="fast_charging">Has Fast Charging</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="has_5g" name="has_5g">
+                            <label for="has_5g">Has 5G</label>
+                        </div>
+                    </div>
+                    <small style="color: #bbb; margin-top: 5px;">*Check if the feature is present.</small>
+                </div>
+
+                <button type="submit">Predict Price</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
