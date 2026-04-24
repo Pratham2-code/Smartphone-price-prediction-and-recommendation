@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smartphone Price Predictor 📱</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #050510;
+            --card-bg: rgba(15, 15, 30, 0.7);
+            --accent-violet: #8b5cf6;
+            --accent-purple: #a855f7;
+            --accent-pink: #d946ef;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --input-bg: rgba(10, 10, 20, 0.8);
+            --border-color: rgba(139, 92, 246, 0.3);
+            --glow-color: rgba(139, 92, 246, 0.4);
+            --success-glow: rgba(16, 185, 129, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(217, 70, 239, 0.1) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, var(--accent-violet), var(--accent-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: -0.03em;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        #main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px;
+            align-items: start;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(139, 92, 246, 0.6);
+            box-shadow: 0 30px 60px -12px rgba(139, 92, 246, 0.2);
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent-violet), var(--accent-pink), transparent);
+            opacity: 0.7;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+        }
+
+        h2 i {
+            color: var(--accent-violet);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-left: 4px;
+        }
+
+        input, select {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 16px;
+            border-radius: 14px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            outline: none;
+            color-scheme: dark;
+        }
+
+        select option {
+            background-color: #0f0f1a;
+            color: #fff;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-violet);
+            background: rgba(139, 92, 246, 0.05);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+        }
+
+        .checkbox-container {
+            display: flex;
+            gap: 20px;
+            background: var(--input-bg);
+            padding: 15px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .checkbox-item input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-violet);
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            margin-top: 10px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent-violet), var(--accent-purple));
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px rgba(139, 92, 246, 0.6);
+            filter: brightness(1.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Results Styles */
+        .prediction-result {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 35px;
+            animation: pulse-glow 2s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 10px rgba(16, 185, 129, 0.1); }
+            to { box-shadow: 0 0 25px rgba(16, 185, 129, 0.3); }
+        }
+
+        .prediction-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #10b981;
+            text-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .rec-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rec-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .rec-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 16px 20px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .rec-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--border-color);
+            transform: translateX(5px);
+        }
+
+        .rec-name {
+            font-weight: 600;
+        }
+
+        .rec-price {
+            color: var(--accent-violet);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* XAI Visualization */
+        .xai-section {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            width: 100%;
+            margin-top: 20px;
+            animation: fadeInUp 0.8s ease-out backwards;
+            animation-delay: 0.4s;
+        }
+
+        .xai-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            border: 1px solid var(--accent-violet);
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .xai-card:hover {
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .xai-header {
+            padding: 15px 25px;
+            background: linear-gradient(90deg, var(--accent-violet), var(--accent-purple));
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .xai-body {
+            padding: 20px;
+        }
+
+        .xai-body img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            display: block;
+        }
+
+        .xai-body iframe {
+            width: 100%;
+            height: 450px;
+            border: none;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glass-card {
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
+
+        .glass-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-violet);
+        }
+
+        @media (max-width: 900px) {
+            #main-content {
+                grid-template-columns: 1fr;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width {
+                grid-column: span 1;
+            }
+            header h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>SmartPredict AI</h1>
+        <p>Next-gen Smartphone Price Estimation with XAI</p>
+    </header>
+
+    <div id="main-content">
+
+        <!-- RESULT PANEL -->
+        {% if prediction_text or recommendations %}
+        <div class="glass-card result-panel">
+            <h2>✨ Prediction Insights</h2>
+
+            {% if prediction_text %}
+            <div class="prediction-result">
+                <div class="prediction-text">{{ prediction_text }}</div>
+            </div>
+            {% endif %}
+
+            {% if recommendations %}
+            <div class="rec-section">
+                <h3>🔍 Top Recommendations</h3>
+                <div class="rec-list">
+                    {% for rec in recommendations %}
+                    <div class="rec-card">
+                        <div class="rec-name">{{ rec.brand }} {{ rec.name }}</div>
+                        <div class="rec-price">{{ rec.price }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- INPUT FORM -->
+        <div class="glass-card">
+            <h2>📱 Device Specifications</h2>
+            
+            <form action="/predict" method="POST">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Operating System</label>
+                        <select name="os" required>
+                            <option disabled selected>Select OS</option>
+                            {% for os_name in oss %}
+                            <option value="{{ os_name }}">{{ os_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Processor Brand</label>
+                        <select name="processor_brand" required>
+                            <option disabled selected>Select Processor</option>
+                            {% for processor in processors %}
+                            <option value="{{ processor }}">{{ processor }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Display Type</label>
+                        <select name="display_types" required>
+                            <option disabled selected>Select Display</option>
+                            {% for display in displays %}
+                            <option value="{{ display }}">{{ display }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Refresh Rate (Hz)</label>
+                        <input type="number" name="refresh_rate" placeholder="e.g. 120" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>RAM (GB)</label>
+                        <input type="number" name="ram" placeholder="e.g. 8" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Storage (GB)</label>
+                        <input type="number" name="storage" placeholder="e.g. 128" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Battery (mAh)</label>
+                        <input type="number" name="battery_capacity" placeholder="e.g. 5000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Rear Camera (MP)</label>
+                        <input type="number" name="rear_camera" placeholder="e.g. 64" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Front Camera (MP)</label>
+                        <input type="number" name="front_camera" placeholder="e.g. 16" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Features</label>
+                        <div class="checkbox-container">
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="fast_charging">
+                                Fast Charging
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="has_5g">
+                                5G Support
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit">Analyze Price</button>
+            </form>
+        </div>
+
+        <!-- XAI SECTION -->
+        {% if shap_img or lime_file %}
+        <div class="xai-section">
+            {% if shap_img %}
+            <div class="xai-card">
+                <div class="xai-header">
+                    <span>📊 SHAP Explanation</span>
+                    <small>Feature Impact</small>
+                </div>
+                <div class="xai-body">
+                    <img src="{{ url_for('static', filename=shap_img) }}" alt="SHAP Waterfall Plot">
+                </div>
+            </div>
+            {% endif %}
+
+            {% if lime_file %}
+            <div class="xai-card">
+                <div class="xai-header">
+                    <span>📈 LIME Contribution</span>
+                    <small>Local Explanation</small>
+                </div>
+                <div class="xai-body">
+                    <iframe src="{{ url_for('static', filename=lime_file) }}"></iframe>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>
